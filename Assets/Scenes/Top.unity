@@ -4045,12 +4045,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 848987677}
-  movementSmoothing: 0.05
   currentWire: 2
-  AtackCoolDown: 3
+  AtackCoolDown: 1.7
   attackTime: 0
   targetChecker: {fileID: 237887806}
-  balancing: 0
+  balancing: 1
   balance: 0
   balanceScale: 1.005
   impulseCurve:

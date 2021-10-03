@@ -8,8 +8,9 @@ public class GameManager : MonoBehaviour
 {
     private SimpleHero hero;
     public PlayableDirector timeline;
+	public PlayableDirector climbTimeline;
 
-    void Start()
+	void Start()
     {
         hero = FindObjectOfType<SimpleHero>();
     }
@@ -26,7 +27,17 @@ public class GameManager : MonoBehaviour
 	{
 		if (collision.GetComponent<SimpleHero>())
 		{
-			SceneManager.LoadScene(1);
+			
+			hero.canMove = false;
+			FindObjectOfType<CameraFollow>().follow = false;
+			climbTimeline.Play();
+
+			//SceneManager.LoadScene(1);
 		}
+	}
+
+	public void EndLevel()
+	{
+		SceneManager.LoadScene(1);
 	}
 }

@@ -13,13 +13,13 @@ public class SimpleHero : MonoBehaviour
     private Rigidbody2D rb;
     private float horizontalInput;
 
-    private Animator anim;
+    public Animator anim;
     private readonly int speedCode = Animator.StringToHash("speed");
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponentInChildren<Animator>();
+        //anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -50,6 +50,7 @@ public class SimpleHero : MonoBehaviour
         }
         else
         {
+            rb.velocity = Vector2.zero;
             anim.SetFloat(speedCode, 0f);
         }
     
