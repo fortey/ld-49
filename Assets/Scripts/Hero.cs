@@ -223,6 +223,7 @@ public class Hero : MonoBehaviour
 		{
             state = State.Lose;
             Wires.instance.TurnOffAll();
+            GetComponent<AudioSource>().Play();
             FindObjectOfType<Level2>().SendMessage("InvokeLose");
 		}
     }
