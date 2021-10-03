@@ -12,6 +12,9 @@ public class Raven : MonoBehaviour
     [SerializeField] private float AtackCoolDown = 3f;
     [SerializeField] private float ofssetY = 1f;
     [SerializeField] private float speed = 3f;
+    [SerializeField] private float attackTime = 0f;
+
+    private readonly int attack_anim = Animator.StringToHash("attack");
 
     void Start()
     {
@@ -25,10 +28,22 @@ public class Raven : MonoBehaviour
     {
         var target = new Vector2(heroTrasform.position.x+AtackDistance, heroTrasform.position.y + ofssetY);
         transform.position = Vector2.MoveTowards(transform.position, target, Time.deltaTime * speed);
+
+        if (attackTime > 0)
+            attackTime -= Time.deltaTime;
+
+        if(attackTime<=0 && Vector2.Distance(transform.position, target) < 0.4f)
+		{
+            attackTime = AtackCoolDown;
+            Invoke(nameof(Attack), 1f);
+		}
     }
 
-	private void FixedUpdate()
+
+    public void Attack()
 	{
+        anim.SetTrigger(attack_anim);
         
+        hero.SendMessage("Damage");
 	}
 }

@@ -19,7 +19,13 @@ public class Hero : MonoBehaviour
     private bool facingRight = true;
     private Vector3 velocity = Vector3.zero;
 
+    [Space]
     public int currentWire = 2;
+
+    [Header("Attack")]
+    [SerializeField] private float AtackCoolDown = 3f;
+    [SerializeField] private float attackTime = 0f;
+    [SerializeField] private Transform targetChecker;
 
     [Header("Balancing")]
     [SerializeField] private bool balancing = true;
@@ -41,6 +47,7 @@ public class Hero : MonoBehaviour
     private Rigidbody2D rb;
     private float horizontalInput;
     private State state = State.OnWire;
+    private SpriteRenderer spriteRenderer;
 
     private Animator anim;
     private readonly int balanceCode = Animator.StringToHash("balance");
@@ -49,11 +56,13 @@ public class Hero : MonoBehaviour
     private readonly int jumpCode = Animator.StringToHash("jump");
     private readonly int onGroundCode = Animator.StringToHash("onGround");
     private readonly int damageCode = Animator.StringToHash("damage");
+    private readonly int attackCode = Animator.StringToHash("attack");
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
@@ -74,6 +83,14 @@ public class Hero : MonoBehaviour
         {
             //anim.SetFloat(speedYCode, rb.velocity.y);
         }
+
+        if (attackTime > 0)
+            attackTime -= Time.deltaTime;
+
+        if (state == State.OnWire && Input.GetKeyDown(KeyCode.E))
+		{
+            Attack();
+		}
     }
 
 	private void FixedUpdate()
@@ -142,7 +159,7 @@ public class Hero : MonoBehaviour
         {
             grounded = false;
             state = State.Jumping;
-            ChangeWire(currentWire - 1);
+            ChangeWire(currentWire - 1, switchWireForce);
             anim.SetTrigger(jumpCode);
         }
 
@@ -150,7 +167,7 @@ public class Hero : MonoBehaviour
         {
             grounded = false;
             state = State.Jumping;
-            ChangeWire(currentWire +1);
+            ChangeWire(currentWire +1, switchWireForce/2);
             anim.SetTrigger(jumpCode);
         }
     }
@@ -189,12 +206,12 @@ public class Hero : MonoBehaviour
         transform.localScale = scale;
     }
 
-    private void ChangeWire(int newWire)
+    private void ChangeWire(int newWire, float force)
 	{
-        rb.AddForce(new Vector2(0f, switchWireForce));
+        rb.AddForce(new Vector2(0f, force));
         Wires.instance.ChangeWire(currentWire, newWire);
         currentWire = newWire;
-        GetComponent<SpriteRenderer>().sortingOrder = newWire;
+        spriteRenderer.sortingOrder = newWire;
     }
 
     private void OnBalanceChangerHandler()
@@ -212,6 +229,29 @@ public class Hero : MonoBehaviour
 	{
         anim.SetTrigger(damageCode);
 	}
+
+    private void Attack()
+	{
+		if (attackTime <= 0)
+		{
+            attackTime = AtackCoolDown;
+            anim.SetTrigger(attackCode);
+
+        }
+	}
+
+    public void AttackEnd()
+	{
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(targetChecker.position, 0.2f);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            var raven = colliders[i].GetComponent<Raven>();
+            if (raven)
+            {
+                Destroy(raven.gameObject, 0.5f);
+            }
+        }
+    }
 }
 
 public enum State { OnGround, OnWire, Waving, Jumping, Lose}
