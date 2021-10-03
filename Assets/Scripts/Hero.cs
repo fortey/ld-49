@@ -21,18 +21,18 @@ public class Hero : MonoBehaviour
 
     public int currentWire = 2;
 
+    [Header("Balancing")]
+    [SerializeField] private bool balancing = true;
     public float Balance { get=>balance;
         set {
-            if (state == State.OnWire || state == State.Waving)
+            if ((state == State.OnWire || state == State.Waving)&&balancing)
             {
                 balance = Mathf.Clamp(value, -1f, 1f);
                 OnBalanceChangerHandler();
             }
         } }
     [SerializeField] private float balance;
-
-
-    [Header("Balancing")]
+    
     public float balanceScale = 1.01f;
     public AnimationCurve impulseCurve;
     public float impulse = 0.001f;
@@ -48,6 +48,7 @@ public class Hero : MonoBehaviour
     private readonly int speedYCode = Animator.StringToHash("speedY");
     private readonly int jumpCode = Animator.StringToHash("jump");
     private readonly int onGroundCode = Animator.StringToHash("onGround");
+    private readonly int damageCode = Animator.StringToHash("damage");
 
     void Start()
     {
@@ -193,6 +194,7 @@ public class Hero : MonoBehaviour
         rb.AddForce(new Vector2(0f, switchWireForce));
         Wires.instance.ChangeWire(currentWire, newWire);
         currentWire = newWire;
+        GetComponent<SpriteRenderer>().sortingOrder = newWire;
     }
 
     private void OnBalanceChangerHandler()
@@ -205,6 +207,11 @@ public class Hero : MonoBehaviour
             Wires.instance.TurnOffAll();
 		}
     }
+
+    public void Damage()
+	{
+        anim.SetTrigger(damageCode);
+	}
 }
 
 public enum State { OnGround, OnWire, Waving, Jumping, Lose}

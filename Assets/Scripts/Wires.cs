@@ -5,7 +5,8 @@ using UnityEngine;
 public class Wires : MonoBehaviour
 {
     public static Wires instance;
-    [SerializeField] private CompositeCollider2D[] wires;
+    [SerializeField] private Collider2D[] wires;
+
     void Start()
     {
         instance = this;
@@ -13,13 +14,14 @@ public class Wires : MonoBehaviour
 
     public void ChangeWire(int oldWire, int newWire)
 	{
-        wires[oldWire].isTrigger = true;
-        wires[newWire].isTrigger = false;
+        wires[oldWire].enabled = false;
+        wires[newWire].enabled = true;
     }
 
     public void TurnOffAll()
 	{
         foreach (var wire in wires)
-            wire.isTrigger = true;
+            wire.enabled = false;
 	}
+    
 }
