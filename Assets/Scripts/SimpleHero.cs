@@ -7,7 +7,7 @@ public class SimpleHero : MonoBehaviour
     [Header("Movement")]
     public bool canMove;
     public float speed = 2f;
-    [Range(0, .3f)] [SerializeField] private float movementSmoothing = 0.05f;
+    //[Range(0, .3f)] [SerializeField] private float movementSmoothing = 0.05f;
     private bool facingRight = true;
     private Vector3 velocity = Vector3.zero;
     private Rigidbody2D rb;
@@ -36,7 +36,7 @@ public class SimpleHero : MonoBehaviour
         if (canMove)
         {
             Vector3 targetVelocity = new Vector2(move * speed, rb.velocity.y);
-            rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
+            rb.velocity = targetVelocity;//Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
 
             if (move > 0 && !facingRight)
             {

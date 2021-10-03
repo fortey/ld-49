@@ -6,6 +6,7 @@ using UnityEngine;
 public class Hero : MonoBehaviour
 {
     public event Action<float> OnBalanceChanged;
+    public event Action OnDamaged;
 
     [Header("Movement")]
     public float speed = 2f;
@@ -13,7 +14,7 @@ public class Hero : MonoBehaviour
     [SerializeField] private float switchWireForce = 3000f;
     [SerializeField] private LayerMask whatIsGround;                     
     [SerializeField] private Transform groundCheck;
-    [Range(0, .3f)] [SerializeField] private float movementSmoothing = 0.05f;
+    //[Range(0, .3f)] [SerializeField] private float movementSmoothing = 0.05f;
     const float groundedRadius = 0.2f;
     private bool grounded;
     private bool facingRight = true;
@@ -130,8 +131,8 @@ public class Hero : MonoBehaviour
         if (grounded|| state == State.Jumping)
         {
             Vector3 targetVelocity = new Vector2(move * speed, rb.velocity.y);
-            rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
-
+            //rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
+            rb.velocity = targetVelocity;
             if (move > 0 && !facingRight)
             {
                 Flip();
@@ -222,12 +223,14 @@ public class Hero : MonoBehaviour
 		{
             state = State.Lose;
             Wires.instance.TurnOffAll();
+            FindObjectOfType<Level2>().SendMessage("InvokeLose");
 		}
     }
 
     public void Damage()
 	{
         anim.SetTrigger(damageCode);
+        OnDamaged?.Invoke();
 	}
 
     private void Attack()
@@ -248,6 +251,7 @@ public class Hero : MonoBehaviour
             var raven = colliders[i].GetComponent<Raven>();
             if (raven)
             {
+                raven.Damage();
                 Destroy(raven.gameObject, 0.5f);
             }
         }

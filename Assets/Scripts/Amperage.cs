@@ -12,9 +12,12 @@ public class Amperage : MonoBehaviour
 	private Transform trform;
 	public int wire;
 
+	private AudioSource audios;
+
 	private void Start()
 	{
 		trform = transform;
+		audios = GetComponent<AudioSource>();
 	}
 	void Update()
     {
@@ -42,9 +45,10 @@ public class Amperage : MonoBehaviour
 	}
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (collision.GetComponent<Hero>())
+		if (collision.GetComponent<Hero>() && collision.GetComponent<Hero>().currentWire==wire)
 		{
 			collision.SendMessage("Damage");
+			audios.Play();
 		}
 	}
 }
